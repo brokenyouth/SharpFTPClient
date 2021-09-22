@@ -96,5 +96,34 @@ namespace SharpFTPClient
 			return (await ftpClient.GetListingAsync(targetDir, FtpListOption.ForceList)).Count();
 		}
 
+		public void DownloadFile(string remoteFileLocation, string localDestination)
+        {
+
+			Console.WriteLine("DownloadFile call");
+			Action<FtpProgress> progress = delegate(FtpProgress p){
+				if (p.Progress == 1)
+				{
+					Console.WriteLine("Successfully download file " + remoteFileLocation + " to dest: " + localDestination);
+				}
+				else
+				{
+					Console.WriteLine("Download of file " + remoteFileLocation + " ----> " + p.Progress + "%");
+				}
+			};
+
+			// download a file and ensure the local directory is created
+			ftpClient.DownloadFile(localDestination, remoteFileLocation, FtpLocalExists.Resume, FtpVerify.None, progress);
+			
+        }
+
+		public void DownloadDirectory(string remoteLocation, string localDestination)
+		{
+
+			Console.WriteLine("DownloadDirectory call");
+			
+			// download a file and ensure the local directory is created
+			ftpClient.DownloadDirectory(localDestination, remoteLocation, FtpFolderSyncMode.Mirror);
+
+		}
 	}
 }

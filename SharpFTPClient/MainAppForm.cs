@@ -6,9 +6,11 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using FluentFTP;
+using Microsoft.WindowsAPICodePack.Dialogs;
 
 namespace SharpFTPClient
 {
@@ -69,6 +71,7 @@ namespace SharpFTPClient
                         catch (UnauthorizedAccessException)
                         {
                             //display a locked folder icon
+                            //make and add correct image icon later
                             node.ImageIndex = 2;
                             node.SelectedImageIndex = 2;
                         }
@@ -97,6 +100,7 @@ namespace SharpFTPClient
 
                     string nodeDirectoryPath = e.Node.FullPath;
                     CreateRemoteDirectoryView(e.Node, e.Node.Tag.ToString());
+                    e.Node.Expand(); // ??
                 }
             }
         }
@@ -116,6 +120,7 @@ namespace SharpFTPClient
                     node.Nodes.Add("...");
 
                 localDirTreeView.Nodes.Add(node);
+                node.Expand();
             }
         }
 
@@ -126,10 +131,10 @@ namespace SharpFTPClient
             var dirNode = new TreeNode(workingDir);
             var dirListing = await ftpManager.GetDirectoryListing(workingDir);
 
-            var directorties = dirListing.Where( d => d.IsDirectory );
+            var directorties = dirListing.Where(d => d.IsDirectory);
             var files = dirListing.Where(d => !d.IsDirectory);
 
-            foreach ( var dir in directorties )
+            foreach (var dir in directorties)
             {
                 var node = new TreeNode(dir.Name, 2, 2);
                 node.Name = dir.Name;
@@ -142,7 +147,7 @@ namespace SharpFTPClient
                 parentNode.Nodes.Add(node);
             }
 
-            foreach ( var file in files )
+            foreach (var file in files)
             {
                 var node = new TreeNode(file.Name, 1, 1);
                 node.Name = file.Name;
@@ -150,6 +155,7 @@ namespace SharpFTPClient
                 node.ContextMenuStrip = nodeContextMenuStrip;
                 parentNode.Nodes.Add(node);
             }
+            parentNode.Expand();
         }
 
         private void Host_Click(object sender, EventArgs e)
@@ -168,7 +174,7 @@ namespace SharpFTPClient
             // We will only deal with clicks outside of a node
             // remoteDirTreeView_NodeMouseClick will deal with node clicks
 
-            // We have to create a temporary var for if check
+            // create a temporary variable for the if check
             TreeNode nodeClicked = null;
             int mouseX = e.X;
             int mouseY = e.Y;
@@ -184,14 +190,14 @@ namespace SharpFTPClient
                 // if we get here, this method's real work starts
                 if (e.Button.Equals(MouseButtons.Right))
                 {
-                    
+
                     if (ftpManager.IsConnected)
                     {
                         Console.WriteLine("heyya");
                         this.remoteTreeContextMenuStrip.Show(new Point(mouseX, mouseY));
                         //Console.WriteLine(ftpManager.IsConnected.ToString());
                     }
-                }       
+                }
             }
 
         }
@@ -200,6 +206,8 @@ namespace SharpFTPClient
         {
             try
             {
+                if (ftpManager.IsConnected)
+                    return;
                 Task t = ftpManager.Connect(hostTextBox.Text, userTextBox.Text, passwordTextBox.Text);
                 await t;
                 if (remoteDirTreeView.Nodes.Count > 0)
@@ -211,21 +219,65 @@ namespace SharpFTPClient
             {
                 Console.WriteLine(ex.ToString());
             }
-            
-            
-        
+
+
+
         }
 
         void remoteDirTreeView_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
-            /*if (e.Node.Tag != null)
+            if (e.Node.Tag != null)
             {
                 if (e.Button == MouseButtons.Right)
                 {
                     this.remoteDirTreeView.SelectedNode = e.Node;
                 }
-            }*/
-                
+            }
+
+        }
+
+        private void newFolderToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Console.WriteLine("NEW FOLDER");
+        }
+
+        private void newFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Console.WriteLine("NEW FILE");
+        }
+
+        private void downloadToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (this.remoteDirTreeView.SelectedNode != null)
+            {
+                TreeNode targetNode = this.remoteDirTreeView.SelectedNode;
+                // prompt a "Choose directory" dialog
+                CommonOpenFileDialog dialog = new CommonOpenFileDialog();
+                dialog.InitialDirectory = @"C:\";
+                dialog.IsFolderPicker = true;
+                if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+                {
+                    if (targetNode.Nodes.Count > 0) // this is a directory
+                    {
+                        ftpManager.DownloadDirectory(targetNode.Tag.ToString(), dialog.FileName + @"\" + targetNode.Name);
+                    }
+                    else // this is a file
+                    {
+                        ftpManager.DownloadFile(targetNode.Tag.ToString(), dialog.FileName + @"\" + targetNode.Name);
+                    }
+                }
+
+
+            }
+        }
+
+        private void renameToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (this.remoteDirTreeView.SelectedNode != null)
+            {
+                TreeNode targetNode = this.remoteDirTreeView.SelectedNode;
+                var originalText = targetNode.Tag.ToString();
+            }
         }
     }
 }
