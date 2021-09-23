@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -151,6 +152,45 @@ namespace SharpFTPClient
             {
 				ftpClient.DeleteFile(remoteLocation);
             }
+
+		}
+
+		public void NewFolder(string remoteDestination)
+		{
+
+			Console.WriteLine("NewFolder call");
+			ftpClient.CreateDirectory(remoteDestination, true);
+
+		}
+
+		public void NewFile(string remoteDestination, string fileName)
+		{
+
+			Console.WriteLine("NewFile call");
+
+			DirectoryInfo di = Directory.CreateDirectory(@"C:\temp\");
+			string localTempPath = @"C:\temp\" + fileName;
+			try
+			{
+				// Create the file, or overwrite if the file exists.
+				using (FileStream fs = File.Create(localTempPath))
+				{
+					byte[] info = new UTF8Encoding(true).GetBytes("");
+					// Add some information to the file.
+					fs.Write(info, 0, info.Length);
+				}
+
+				ftpClient.UploadFile(localTempPath, remoteDestination);
+
+				// Delete the file.
+				File.Delete(localTempPath);
+				di.Delete();
+			}
+
+			catch (Exception ex)
+			{
+				Console.WriteLine(ex.ToString());
+			}
 
 		}
 	}

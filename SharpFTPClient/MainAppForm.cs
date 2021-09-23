@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using FluentFTP;
+using Microsoft.VisualBasic;
 using Microsoft.WindowsAPICodePack.Dialogs;
 
 namespace SharpFTPClient
@@ -25,7 +26,7 @@ namespace SharpFTPClient
 
         private void MainAppForm_Load(object sender, EventArgs e)
         {
-            remoteDirTreeView.ContextMenuStrip = remoteTreeContextMenuStrip;
+            //remoteDirTreeView.ContextMenuStrip = nodeContextMenuStrip;
             CreateLocalDirectoryView();
         }
 
@@ -193,7 +194,7 @@ namespace SharpFTPClient
 
                     if (ftpManager.IsConnected)
                     {
-                        this.remoteTreeContextMenuStrip.Show(new Point(mouseX, mouseY));
+                        this.nodeContextMenuStrip.Show(new Point(mouseX, mouseY));
                         //Console.WriteLine(ftpManager.IsConnected.ToString());
                     }
                 }
@@ -234,17 +235,6 @@ namespace SharpFTPClient
             }
 
         }
-
-        private void newFolderToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Console.WriteLine("NEW FOLDER");
-        }
-
-        private void newFileToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Console.WriteLine("NEW FILE");
-        }
-
 
         private void downloadToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -331,6 +321,52 @@ namespace SharpFTPClient
                 bool isDirectory = targetNode.Nodes.Count > 0 ? true : false;
                 ftpManager.Delete(targetNode.Tag.ToString(), isDirectory);
                 this.remoteDirTreeView.SelectedNode.Remove();
+            }
+        }
+
+        private void newFolderToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            if (this.remoteDirTreeView.SelectedNode != null)
+            {
+                TreeNode selectedNode = this.remoteDirTreeView.SelectedNode;
+                string content = Interaction.InputBox("Enter folder name : ", "New Folder", "New Folder", 500, 350);
+
+                if (content == "")
+                {
+                    MessageBox.Show("Cannot create a new folder. The specified name is empty.");
+                    return;
+                }
+                else
+                {
+                    TreeNode newFolderNode = new TreeNode(content, 2, 2);
+                    newFolderNode.Tag = selectedNode.Tag + "/" + newFolderNode.Text;
+                    selectedNode.Nodes.Add(newFolderNode);
+                    Console.WriteLine(newFolderNode.Tag);
+                    ftpManager.NewFolder(newFolderNode.Tag.ToString());
+                }
+            }
+        }
+
+        private void newFileToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            if (this.remoteDirTreeView.SelectedNode != null)
+            {
+                TreeNode selectedNode = this.remoteDirTreeView.SelectedNode;
+                string content = Interaction.InputBox("Enter file name : ", "New File", "New_File", 500, 350);
+
+                if (content == "")
+                {
+                    MessageBox.Show("Cannot create a new file. The specified name is empty.");
+                    return;
+                }
+                else
+                {
+                    TreeNode newFileNode = new TreeNode(content, 1, 1);
+                    newFileNode.Tag = selectedNode.Tag + "/" + newFileNode.Text;
+                    selectedNode.Nodes.Add(newFileNode);
+                    Console.WriteLine(newFileNode.Tag);
+                    ftpManager.NewFile(newFileNode.Tag.ToString(), newFileNode.Text);
+                }
             }
         }
     }

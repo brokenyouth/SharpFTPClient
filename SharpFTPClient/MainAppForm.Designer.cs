@@ -57,7 +57,6 @@ namespace SharpFTPClient
             this.removeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.renameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editPermissionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.remoteTreeContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.newFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
@@ -65,7 +64,6 @@ namespace SharpFTPClient
             this.localDirGroupbox.SuspendLayout();
             this.remoteDirGroupbox.SuspendLayout();
             this.nodeContextMenuStrip.SuspendLayout();
-            this.remoteTreeContextMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -270,11 +268,13 @@ namespace SharpFTPClient
             // 
             this.nodeContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.downloadToolStripMenuItem,
+            this.newFolderToolStripMenuItem,
+            this.newFileToolStripMenuItem,
             this.removeToolStripMenuItem,
             this.renameToolStripMenuItem,
             this.editPermissionToolStripMenuItem});
             this.nodeContextMenuStrip.Name = "nodeContextMenuStrip";
-            this.nodeContextMenuStrip.Size = new System.Drawing.Size(181, 114);
+            this.nodeContextMenuStrip.Size = new System.Drawing.Size(181, 158);
             // 
             // downloadToolStripMenuItem
             // 
@@ -303,27 +303,19 @@ namespace SharpFTPClient
             this.editPermissionToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.editPermissionToolStripMenuItem.Text = "Edit Permission";
             // 
-            // remoteTreeContextMenuStrip
-            // 
-            this.remoteTreeContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.newFolderToolStripMenuItem,
-            this.newFileToolStripMenuItem});
-            this.remoteTreeContextMenuStrip.Name = "contextMenuStrip1";
-            this.remoteTreeContextMenuStrip.Size = new System.Drawing.Size(135, 48);
-            // 
             // newFolderToolStripMenuItem
             // 
             this.newFolderToolStripMenuItem.Name = "newFolderToolStripMenuItem";
-            this.newFolderToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.newFolderToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.newFolderToolStripMenuItem.Text = "New Folder";
-            this.newFolderToolStripMenuItem.Click += new System.EventHandler(this.newFolderToolStripMenuItem_Click);
+            this.newFolderToolStripMenuItem.Click += new System.EventHandler(this.newFolderToolStripMenuItem_Click_1);
             // 
             // newFileToolStripMenuItem
             // 
             this.newFileToolStripMenuItem.Name = "newFileToolStripMenuItem";
-            this.newFileToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.newFileToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.newFileToolStripMenuItem.Text = "New File";
-            this.newFileToolStripMenuItem.Click += new System.EventHandler(this.newFileToolStripMenuItem_Click);
+            this.newFileToolStripMenuItem.Click += new System.EventHandler(this.newFileToolStripMenuItem_Click_1);
             // 
             // MainAppForm
             // 
@@ -348,7 +340,6 @@ namespace SharpFTPClient
             this.localDirGroupbox.ResumeLayout(false);
             this.remoteDirGroupbox.ResumeLayout(false);
             this.nodeContextMenuStrip.ResumeLayout(false);
-            this.remoteTreeContextMenuStrip.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -378,7 +369,6 @@ namespace SharpFTPClient
         private System.Windows.Forms.TreeView remoteDirTreeView;
         private System.Windows.Forms.ImageList ImageListIcons;
         private System.Windows.Forms.ContextMenuStrip nodeContextMenuStrip;
-        private System.Windows.Forms.ContextMenuStrip remoteTreeContextMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem downloadToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem removeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem renameToolStripMenuItem;
