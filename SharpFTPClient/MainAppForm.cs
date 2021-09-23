@@ -193,7 +193,6 @@ namespace SharpFTPClient
 
                     if (ftpManager.IsConnected)
                     {
-                        Console.WriteLine("heyya");
                         this.remoteTreeContextMenuStrip.Show(new Point(mouseX, mouseY));
                         //Console.WriteLine(ftpManager.IsConnected.ToString());
                     }
@@ -246,6 +245,7 @@ namespace SharpFTPClient
             Console.WriteLine("NEW FILE");
         }
 
+
         private void downloadToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (this.remoteDirTreeView.SelectedNode != null)
@@ -266,8 +266,6 @@ namespace SharpFTPClient
                         ftpManager.DownloadFile(targetNode.Tag.ToString(), dialog.FileName + @"\" + targetNode.Name);
                     }
                 }
-
-
             }
         }
 
@@ -276,7 +274,63 @@ namespace SharpFTPClient
             if (this.remoteDirTreeView.SelectedNode != null)
             {
                 TreeNode targetNode = this.remoteDirTreeView.SelectedNode;
-                var originalText = targetNode.Tag.ToString();
+                var originalText = targetNode.Name;
+                //edit the label = true 
+                remoteDirTreeView.LabelEdit = true;
+                if (!remoteDirTreeView.SelectedNode.IsEditing)
+                {
+                    remoteDirTreeView.SelectedNode.BeginEdit();
+                }
+
+            }
+        }
+
+        private void remoteDirTreeView_AfterLabelEdit(object sender, NodeLabelEditEventArgs e)
+        {
+            if (e.Label != null)
+            {
+                if (e.Label.Length > 0)
+                {
+                    if (e.Label.IndexOfAny(new char[] { '@', ',', '!', '?', '=', '$', '%' }) == -1)
+                    {
+                        var originalPath = e.Node.Tag.ToString();
+                        // Stop editing without canceling the label change.
+                        e.Node.EndEdit(false);
+                        var newPath = e.Node.Tag.ToString().Substring(0, originalPath.Length - e.Node.Name.Length) + e.Label; // there's probably a better way of doing this
+                        e.Node.Name = e.Label;
+                        e.Node.Tag = newPath;
+                        // Now call rename on this directory or file.
+                        ftpManager.RenameFileOrDirectory(originalPath, newPath);
+                    }
+                    else
+                    {
+                        // stop editing and inform user
+                        e.CancelEdit = true;
+                        MessageBox.Show("Invalid character.\n" +
+                           "The invalid characters are: '@', ',', '!', '?', '=', '$', '%'",
+                           "Rename");
+                        e.Node.BeginEdit();
+                    }
+                }
+                else
+                {
+                    // the user tried to rename the node to an empty string
+                    e.CancelEdit = true;
+                    MessageBox.Show("Renaming failed. Please type something.",
+                      "Rename");
+                    e.Node.BeginEdit();
+                }
+            }
+        }
+
+        private void removeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (this.remoteDirTreeView.SelectedNode != null)
+            {
+                TreeNode targetNode = this.remoteDirTreeView.SelectedNode;
+                bool isDirectory = targetNode.Nodes.Count > 0 ? true : false;
+                ftpManager.Delete(targetNode.Tag.ToString(), isDirectory);
+                this.remoteDirTreeView.SelectedNode.Remove();
             }
         }
     }

@@ -125,5 +125,33 @@ namespace SharpFTPClient
 			ftpClient.DownloadDirectory(localDestination, remoteLocation, FtpFolderSyncMode.Mirror);
 
 		}
+
+		public void RenameFileOrDirectory(string remoteLocation, string remoteDestination)
+		{
+
+			Console.WriteLine("RenameFileOrDirectory call");
+
+			// rename a file or a directory
+			// this could fail as renaming is server-side dependent.
+			ftpClient.Rename(remoteLocation, remoteDestination);
+
+		}
+
+		public void Delete(string remoteLocation, bool isDirectory)
+		{
+
+			Console.WriteLine("Delete call");
+
+			// check if it is a directory
+			if (isDirectory)
+            {
+				ftpClient.DeleteDirectory(remoteLocation);
+            }
+			else
+            {
+				ftpClient.DeleteFile(remoteLocation);
+            }
+
+		}
 	}
 }

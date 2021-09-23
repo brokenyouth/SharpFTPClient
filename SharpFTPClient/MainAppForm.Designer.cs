@@ -60,7 +60,6 @@ namespace SharpFTPClient
             this.remoteTreeContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.newFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.menuStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.localDirGroupbox.SuspendLayout();
@@ -262,6 +261,7 @@ namespace SharpFTPClient
             this.remoteDirTreeView.SelectedImageIndex = 0;
             this.remoteDirTreeView.Size = new System.Drawing.Size(643, 327);
             this.remoteDirTreeView.TabIndex = 1;
+            this.remoteDirTreeView.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.remoteDirTreeView_AfterLabelEdit);
             this.remoteDirTreeView.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.remoteDirTreeView_BeforeExpand);
             this.remoteDirTreeView.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.remoteDirTreeView_NodeMouseClick);
             this.remoteDirTreeView.MouseDown += new System.Windows.Forms.MouseEventHandler(this.remoteDirTreeView_MouseDown);
@@ -274,7 +274,7 @@ namespace SharpFTPClient
             this.renameToolStripMenuItem,
             this.editPermissionToolStripMenuItem});
             this.nodeContextMenuStrip.Name = "nodeContextMenuStrip";
-            this.nodeContextMenuStrip.Size = new System.Drawing.Size(156, 92);
+            this.nodeContextMenuStrip.Size = new System.Drawing.Size(181, 114);
             // 
             // downloadToolStripMenuItem
             // 
@@ -288,6 +288,7 @@ namespace SharpFTPClient
             this.removeToolStripMenuItem.Name = "removeToolStripMenuItem";
             this.removeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.removeToolStripMenuItem.Text = "Remove";
+            this.removeToolStripMenuItem.Click += new System.EventHandler(this.removeToolStripMenuItem_Click);
             // 
             // renameToolStripMenuItem
             // 
@@ -323,11 +324,6 @@ namespace SharpFTPClient
             this.newFileToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
             this.newFileToolStripMenuItem.Text = "New File";
             this.newFileToolStripMenuItem.Click += new System.EventHandler(this.newFileToolStripMenuItem_Click);
-            // 
-            // contextMenuStrip1
-            // 
-            this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(61, 4);
             // 
             // MainAppForm
             // 
@@ -389,7 +385,6 @@ namespace SharpFTPClient
         private System.Windows.Forms.ToolStripMenuItem editPermissionToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem newFolderToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem newFileToolStripMenuItem;
-        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
     }
 }
 
