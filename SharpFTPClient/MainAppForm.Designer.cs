@@ -47,6 +47,7 @@ namespace SharpFTPClient
             this.quickconnect_button = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.localDirGroupbox = new System.Windows.Forms.GroupBox();
             this.localDirTreeView = new System.Windows.Forms.TreeView();
             this.ImageListIcons = new System.Windows.Forms.ImageList(this.components);
@@ -60,13 +61,15 @@ namespace SharpFTPClient
             this.renameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editPermissionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainTimer = new System.Windows.Forms.Timer(this.components);
-            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
+            this.localNodeConextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.uploadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.localDirGroupbox.SuspendLayout();
             this.remoteDirGroupbox.SuspendLayout();
             this.nodeContextMenuStrip.SuspendLayout();
+            this.localNodeConextMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -216,6 +219,14 @@ namespace SharpFTPClient
             this.groupBox2.TabIndex = 13;
             this.groupBox2.TabStop = false;
             // 
+            // richTextBox1
+            // 
+            this.richTextBox1.Location = new System.Drawing.Point(0, 7);
+            this.richTextBox1.Name = "richTextBox1";
+            this.richTextBox1.Size = new System.Drawing.Size(1326, 134);
+            this.richTextBox1.TabIndex = 1;
+            this.richTextBox1.Text = "";
+            // 
             // localDirGroupbox
             // 
             this.localDirGroupbox.Controls.Add(this.localDirTreeView);
@@ -236,6 +247,8 @@ namespace SharpFTPClient
             this.localDirTreeView.TabIndex = 0;
             this.localDirTreeView.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.localDirTreeView_BeforeExpand);
             this.localDirTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.localDirTreeView_AfterSelect);
+            this.localDirTreeView.MouseDown += new System.Windows.Forms.MouseEventHandler(this.localDirTreeView_MouseDown);
+            this.localDirTreeView.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.localDirTreeView_NodeMouseClick);
             // 
             // ImageListIcons
             // 
@@ -325,13 +338,19 @@ namespace SharpFTPClient
             // 
             this.mainTimer.Enabled = true;
             // 
-            // richTextBox1
+            // localNodeConextMenuStrip
             // 
-            this.richTextBox1.Location = new System.Drawing.Point(0, 7);
-            this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(1326, 134);
-            this.richTextBox1.TabIndex = 1;
-            this.richTextBox1.Text = "";
+            this.localNodeConextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.uploadToolStripMenuItem});
+            this.localNodeConextMenuStrip.Name = "localNodeConextMenuStrip";
+            this.localNodeConextMenuStrip.Size = new System.Drawing.Size(181, 48);
+            // 
+            // uploadToolStripMenuItem
+            // 
+            this.uploadToolStripMenuItem.Name = "uploadToolStripMenuItem";
+            this.uploadToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.uploadToolStripMenuItem.Text = "Upload";
+            this.uploadToolStripMenuItem.Click += new System.EventHandler(this.uploadToolStripMenuItem_Click);
             // 
             // MainAppForm
             // 
@@ -357,6 +376,7 @@ namespace SharpFTPClient
             this.localDirGroupbox.ResumeLayout(false);
             this.remoteDirGroupbox.ResumeLayout(false);
             this.nodeContextMenuStrip.ResumeLayout(false);
+            this.localNodeConextMenuStrip.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -394,6 +414,8 @@ namespace SharpFTPClient
         private System.Windows.Forms.ToolStripMenuItem newFileToolStripMenuItem;
         private System.Windows.Forms.Timer mainTimer;
         private System.Windows.Forms.RichTextBox richTextBox1;
+        private System.Windows.Forms.ContextMenuStrip localNodeConextMenuStrip;
+        private System.Windows.Forms.ToolStripMenuItem uploadToolStripMenuItem;
     }
 }
 

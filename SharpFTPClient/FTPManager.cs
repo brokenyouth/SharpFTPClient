@@ -41,9 +41,10 @@ namespace SharpFTPClient
             ftpClient.ValidateAnyCertificate = true;
 			Task t = ftpClient.ConnectAsync(token);
 			await t;
-			if (ftpClient.IsAuthenticated)
+			if (ftpClient.IsConnected)
 			{
 				IsConnected = true;
+				Console.WriteLine("CONNECTED");
 				logger.AddToLog("Connected to " + host + " with username " + user, Color.Green);
 			}
 			
@@ -179,5 +180,47 @@ namespace SharpFTPClient
 			}
 
 		}
-	}
+
+        public async Task UploadFile(string localLocation, string remoteDestination)
+        {
+            logger.AddToLog("Uploading file: " + localLocation + " to : " + remoteDestination, Color.Black);
+			var token = new CancellationToken();
+			Progress<FtpProgress> progress = new Progress<FtpProgress>(p =>
+			{
+                if (p.Progress == 1)
+                {
+                    logger.AddToLog("Successfully uploaded file to: " + localLocation, Color.Black);
+                }
+                else
+                {
+                    logger.AddToLog("Uploading file: " + localLocation + " : " + p.Progress + "%", Color.Black);
+                }
+            });
+
+			await ftpClient.UploadFileAsync(localLocation, remoteDestination, FtpRemoteExists.Overwrite, false, FtpVerify.None, progress, token);
+
+		}
+
+        public async Task UploadDirectory(string localLocation, string remoteDestination)
+        {
+			logger.AddToLog("Uploading directory: " + localLocation + " to : " + remoteDestination, Color.Black);
+            var token = new CancellationToken();
+			Progress<FtpProgress> progress = new Progress<FtpProgress>(p =>
+			{
+				{
+					if (p.Progress == 1)
+					{
+						logger.AddToLog("Successfully uploaded directory to: " + localLocation, Color.Black);
+					}
+					else
+					{
+						logger.AddToLog("Uploading directory: " + localLocation + " : " + p.Progress + "%", Color.Black);
+					}
+				};
+			});
+            await ftpClient.UploadDirectoryAsync(localLocation, remoteDestination, FtpFolderSyncMode.Mirror, FtpRemoteExists.Skip, FtpVerify.None, null, progress, token);
+
+        }
+
+    }
 }

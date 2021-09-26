@@ -46,11 +46,13 @@ namespace SharpFTPClient
                     //get the list of sub direcotires
                     string[] dirs = Directory.GetDirectories(e.Node.Tag.ToString());
 
-                    // add files of rootdirectory
+                    // add files of root directory
                     DirectoryInfo rootDir = new DirectoryInfo(e.Node.Tag.ToString());
                     foreach (var file in rootDir.GetFiles())
                     {
                         TreeNode n = new TreeNode(file.Name, 1, 1);
+                        n.Tag = file;
+                        n.ContextMenuStrip = localNodeConextMenuStrip;
                         e.Node.Nodes.Add(n);
                     }
 
@@ -59,6 +61,7 @@ namespace SharpFTPClient
                     {
                         DirectoryInfo di = new DirectoryInfo(dir);
                         TreeNode node = new TreeNode(di.Name, 2, 2);
+                        node.Tag = dir;
 
                         try
                         {
@@ -71,6 +74,8 @@ namespace SharpFTPClient
                             foreach (var file in di.GetFiles())
                             {
                                 TreeNode n = new TreeNode(file.Name, 1, 1);
+                                n.Tag = file;
+                                n.ContextMenuStrip = localNodeConextMenuStrip;
                                 node.Nodes.Add(n);
                             }
                         }
@@ -200,9 +205,32 @@ namespace SharpFTPClient
                     if (ftpManager.IsConnected)
                     {
                         this.nodeContextMenuStrip.Show(new Point(mouseX, mouseY));
-                        //Console.WriteLine(ftpManager.IsConnected.ToString());
                     }
                 }
+            }
+
+        }
+
+        private void localDirTreeView_MouseDown(object sender, MouseEventArgs e)
+        {
+
+            // create a temporary variable for the if check
+            TreeNode nodeClicked = null;
+            int mouseX = e.X;
+            int mouseY = e.Y;
+            if (e.Button.Equals(MouseButtons.Right))
+                nodeClicked = this.localDirTreeView.GetNodeAt(mouseX, mouseY);
+
+            if (nodeClicked != null) // we clicked on a node
+            {
+                if (e.Button.Equals(MouseButtons.Right))
+                {
+                    this.localNodeConextMenuStrip.Show(new Point(mouseX, mouseY));
+                }
+            }
+            else // no node has been clicked
+            {
+                
             }
 
         }
@@ -226,6 +254,18 @@ namespace SharpFTPClient
             }
 
 
+
+        }
+
+        void localDirTreeView_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            if (e.Node.Tag != null)
+            {
+                if (e.Button == MouseButtons.Right)
+                {
+                    this.localDirTreeView.SelectedNode = e.Node;
+                }
+            }
 
         }
 
@@ -369,7 +409,6 @@ namespace SharpFTPClient
                     TreeNode newFileNode = new TreeNode(content, 1, 1);
                     newFileNode.Tag = selectedNode.Tag + "/" + newFileNode.Text;
                     selectedNode.Nodes.Add(newFileNode);
-                    Console.WriteLine(newFileNode.Tag);
                     ftpManager.NewFile(newFileNode.Tag.ToString(), newFileNode.Text);
                 }
             }
@@ -378,6 +417,33 @@ namespace SharpFTPClient
         private void mainTimer_Tick(object sender, EventArgs e)
         {
             richTextBox1.Rtf = logger.GetLogAsRichText(true);
+        }
+
+        private async void uploadToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (this.localDirTreeView.SelectedNode != null)
+            {
+                if (ftpManager.IsConnected)
+                {
+                    TreeNode selectedNode = this.localDirTreeView.SelectedNode;
+                    string content = Interaction.InputBox("Enter destination : ", "Upload destination", ftpManager.ftpClient.GetWorkingDirectory(), 500, 350);
+
+                    if (content == "")
+                    {
+                        return;
+                    }
+
+                    if (selectedNode.Nodes.Count > 0)
+                    {
+                        await ftpManager.UploadDirectory(selectedNode.FullPath, content + "/" + selectedNode.Text);
+                    }
+                    else
+                    {
+                        await ftpManager.UploadFile(selectedNode.FullPath, content + "/" + selectedNode.Text);
+                    }
+                }
+                
+            }
         }
     }
 }
