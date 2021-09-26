@@ -35,6 +35,13 @@ namespace SharpFTPClient
             CreateLocalDirectoryView();
         }
 
+        /// <summary>
+        /// This method is called whenever a node is expanded in the local directory view
+        /// It checks for potential sub-directories of the current node
+        /// And builds the tree view accordingly.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void localDirTreeView_BeforeExpand(object sender, TreeViewCancelEventArgs e)
         {
             if (e.Node.Nodes.Count > 0)
@@ -100,6 +107,13 @@ namespace SharpFTPClient
             }
         }
 
+        /// <summary>
+        /// This method is called whenever a node is expanded in the remote directory view
+        /// It checks for potential sub-directories of the current node
+        /// And builds the tree view accordingly.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void remoteDirTreeView_BeforeExpand(object sender, TreeViewCancelEventArgs e)
         {
             if (e.Node.Nodes.Count > 0)
@@ -116,6 +130,9 @@ namespace SharpFTPClient
             }
         }
 
+        /// <summary>
+        /// Utility function to construct the nodes for the local directory view
+        /// </summary>
         private void CreateLocalDirectoryView()
         {
             //get a list of the drives
@@ -135,6 +152,9 @@ namespace SharpFTPClient
             }
         }
 
+        /// <summary>
+        /// Utility function to construct the nodes for the remote directory view
+        /// </summary>
         private async void CreateRemoteDirectoryView(TreeNode parentNode, string workingDir)
         {
             // we know that the parent node is a directory
@@ -180,6 +200,12 @@ namespace SharpFTPClient
 
         }
 
+        /// <summary>
+        /// This method is called whenever a mouse button click occurs on the remote tree view.
+        /// It shows a context menu strip at the mouse location
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void remoteDirTreeView_MouseDown(object sender, MouseEventArgs e)
         {
             // We will only deal with clicks outside of a node
@@ -211,6 +237,12 @@ namespace SharpFTPClient
 
         }
 
+        /// <summary>
+        /// This method is called whenever a mouse button click occurs on the local tree view.
+        /// It shows a context menu strip at the mouse location
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void localDirTreeView_MouseDown(object sender, MouseEventArgs e)
         {
 
@@ -235,6 +267,12 @@ namespace SharpFTPClient
 
         }
 
+        /// <summary>
+        /// Called upon a click on the Quickbutton button.
+        /// Simply connects to the specified ftp credentials.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void quickconnect_button_Click(object sender, EventArgs e)
         {
             try
@@ -257,6 +295,11 @@ namespace SharpFTPClient
 
         }
 
+        /// <summary>
+        /// Marks the target node (at the mouse position) as the selected node for the local directory view.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         void localDirTreeView_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
             if (e.Node.Tag != null)
@@ -269,6 +312,11 @@ namespace SharpFTPClient
 
         }
 
+        /// <summary>
+        /// Marks the target node (at the mouse position) as the selected node for the remote directory view.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         void remoteDirTreeView_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
             if (e.Node.Tag != null)
@@ -281,6 +329,12 @@ namespace SharpFTPClient
 
         }
 
+        /// <summary>
+        /// Called when the Download menu item is called.
+        /// Prompts a file dialog to choose a destination and downloads the file/directory.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void downloadToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (this.remoteDirTreeView.SelectedNode != null)
@@ -304,6 +358,11 @@ namespace SharpFTPClient
             }
         }
 
+        /// <summary>
+        /// Renames a file or directory.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void renameToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (this.remoteDirTreeView.SelectedNode != null)
@@ -320,6 +379,12 @@ namespace SharpFTPClient
             }
         }
 
+        /// <summary>
+        /// Apply label changes after label edit (for renaming)
+        /// And checks for invalid/blank changes.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void remoteDirTreeView_AfterLabelEdit(object sender, NodeLabelEditEventArgs e)
         {
             if (e.Label != null)
@@ -358,6 +423,11 @@ namespace SharpFTPClient
             }
         }
 
+        /// <summary>
+        /// Remove a node and it's corresponding content from the remote server.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void removeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (this.remoteDirTreeView.SelectedNode != null)
@@ -369,6 +439,11 @@ namespace SharpFTPClient
             }
         }
 
+        /// <summary>
+        /// Creates a new folder in the remote server & remote view.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void newFolderToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
             if (this.remoteDirTreeView.SelectedNode != null)
@@ -386,12 +461,16 @@ namespace SharpFTPClient
                     TreeNode newFolderNode = new TreeNode(content, 2, 2);
                     newFolderNode.Tag = selectedNode.Tag + "/" + newFolderNode.Text;
                     selectedNode.Nodes.Add(newFolderNode);
-                    Console.WriteLine(newFolderNode.Tag);
                     ftpManager.NewFolder(newFolderNode.Tag.ToString());
                 }
             }
         }
 
+        /// <summary>
+        /// Creates a new file in the remote server & remote view.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void newFileToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
             if (this.remoteDirTreeView.SelectedNode != null)
@@ -414,11 +493,22 @@ namespace SharpFTPClient
             }
         }
 
+        /// <summary>
+        /// Used for the logging text box.
+        /// Updates the view every mainTimer.Interval
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void mainTimer_Tick(object sender, EventArgs e)
         {
             richTextBox1.Rtf = logger.GetLogAsRichText(true);
         }
 
+        /// <summary>
+        /// Upload a file or directory from local pc to remote server.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void uploadToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (this.localDirTreeView.SelectedNode != null)
