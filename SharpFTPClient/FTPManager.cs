@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -20,54 +21,38 @@ namespace SharpFTPClient
 			get; set;
 		}
 
-		public FTPManager()
+		public Logger logger
+        {
+			get; set;
+        }
+
+		public FTPManager(Logger _log)
         {
 			ftpClient = null;
 			IsConnected = false;
+			logger = _log;
         }
         public async Task Connect(string host, string user, string password)
         {
+			logger.AddToLog("Attempting connection to: " + host + " with username " + user, Color.Black);
 			var token = new CancellationToken();
-
 			ftpClient = new FtpClient(host, user, password);
             ftpClient.EncryptionMode = FtpEncryptionMode.Explicit;
             ftpClient.ValidateAnyCertificate = true;
 			Task t = ftpClient.ConnectAsync(token);
 			await t;
 			if (ftpClient.IsAuthenticated)
-				IsConnected = true;
-			// get a recursive listing of the files & folders in a specific folder
-			foreach (var item in ftpClient.GetListing(ftpClient.GetWorkingDirectory(), FtpListOption.Recursive))
 			{
-				switch (item.Type)
-				{
-
-					case FtpFileSystemObjectType.Directory:
-
-						Console.WriteLine("Directory -> " + item.FullName);
-						Console.WriteLine("Modified date:  " + await ftpClient.GetModifiedTimeAsync(item.FullName, token));
-
-						break;
-
-					case FtpFileSystemObjectType.File:
-
-						Console.WriteLine("File ->  " + item.Name);
-						Console.WriteLine("File size:  " + await ftpClient.GetFileSizeAsync(item.FullName, -1 , token));
-						Console.WriteLine("Modified date:  " + await ftpClient.GetModifiedTimeAsync(item.FullName, token));
-						Console.WriteLine("Chmod:  " + await ftpClient.GetChmodAsync(item.FullName));
-
-						break;
-
-					case FtpFileSystemObjectType.Link:
-						break;
-				}
+				IsConnected = true;
+				logger.AddToLog("Connected to " + host + " with username " + user, Color.Green);
 			}
 			
         }
 
 		public async Task<IEnumerable<FTPListingDetail>> GetDirectoryListing(string workingDir)
         {
-			var token = new CancellationToken();
+            logger.AddToLog("Listing files of " + workingDir, Color.Black);
+            var token = new CancellationToken();
 			var result = new List<FTPListingDetail>();
 			foreach (var item in await ftpClient.GetListingAsync(workingDir, FtpListOption.ForceList))
 			{
@@ -99,16 +84,15 @@ namespace SharpFTPClient
 
 		public void DownloadFile(string remoteFileLocation, string localDestination)
         {
-
-			Console.WriteLine("DownloadFile call");
+            logger.AddToLog("Downloading file: " + remoteFileLocation, Color.Black);
 			Action<FtpProgress> progress = delegate(FtpProgress p){
 				if (p.Progress == 1)
 				{
-					Console.WriteLine("Successfully download file " + remoteFileLocation + " to dest: " + localDestination);
+					logger.AddToLog("Successfully downloaded file to: " + localDestination, Color.Black);
 				}
 				else
 				{
-					Console.WriteLine("Download of file " + remoteFileLocation + " ----> " + p.Progress + "%");
+					logger.AddToLog("Downloading file: " + localDestination + " : " + p.Progress + "%", Color.Black); 
 				}
 			};
 
@@ -120,8 +104,8 @@ namespace SharpFTPClient
 		public void DownloadDirectory(string remoteLocation, string localDestination)
 		{
 
-			Console.WriteLine("DownloadDirectory call");
-			
+			logger.AddToLog("Downloading directory: " + remoteLocation, Color.Black);
+
 			// download a file and ensure the local directory is created
 			ftpClient.DownloadDirectory(localDestination, remoteLocation, FtpFolderSyncMode.Mirror);
 
@@ -130,7 +114,7 @@ namespace SharpFTPClient
 		public void RenameFileOrDirectory(string remoteLocation, string remoteDestination)
 		{
 
-			Console.WriteLine("RenameFileOrDirectory call");
+			logger.AddToLog("Renaming: " + remoteLocation + " to " + remoteDestination, Color.Green);
 
 			// rename a file or a directory
 			// this could fail as renaming is server-side dependent.
@@ -141,24 +125,25 @@ namespace SharpFTPClient
 		public void Delete(string remoteLocation, bool isDirectory)
 		{
 
-			Console.WriteLine("Delete call");
+			logger.AddToLog("Deleting: " + remoteLocation, Color.Black);
 
 			// check if it is a directory
 			if (isDirectory)
             {
 				ftpClient.DeleteDirectory(remoteLocation);
-            }
+				logger.AddToLog("Deleted directory: " + remoteLocation, Color.Green);
+			}
 			else
             {
 				ftpClient.DeleteFile(remoteLocation);
-            }
+				logger.AddToLog("Deleted file: " + remoteLocation, Color.Green);
+			}
 
 		}
 
 		public void NewFolder(string remoteDestination)
 		{
-
-			Console.WriteLine("NewFolder call");
+			logger.AddToLog("Creating new folder: " + remoteDestination, Color.Black);
 			ftpClient.CreateDirectory(remoteDestination, true);
 
 		}
@@ -166,7 +151,7 @@ namespace SharpFTPClient
 		public void NewFile(string remoteDestination, string fileName)
 		{
 
-			Console.WriteLine("NewFile call");
+			logger.AddToLog("Creating new file: " + remoteDestination + "/" + fileName, Color.Black);
 
 			DirectoryInfo di = Directory.CreateDirectory(@"C:\temp\");
 			string localTempPath = @"C:\temp\" + fileName;
@@ -189,6 +174,7 @@ namespace SharpFTPClient
 
 			catch (Exception ex)
 			{
+				logger.AddToLog("Failed creating new file: " + remoteDestination + "/" + fileName, Color.Red);
 				Console.WriteLine(ex.ToString());
 			}
 

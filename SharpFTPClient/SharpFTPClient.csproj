@@ -67,6 +67,7 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Logger.cs" />
     <Compile Include="RenameForm.cs">
       <SubType>Form</SubType>
     </Compile>

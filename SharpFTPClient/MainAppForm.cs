@@ -12,21 +12,26 @@ using System.Windows.Forms;
 using FluentFTP;
 using Microsoft.VisualBasic;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using Timer = System.Windows.Forms.Timer;
 
 namespace SharpFTPClient
 {
     public partial class MainAppForm : Form
     {
+        private Logger logger;
         private FTPManager ftpManager;
         public MainAppForm()
         {
-            ftpManager = new FTPManager();
+            logger = new Logger(100u);
+            ftpManager = new FTPManager(logger);
             InitializeComponent();
         }
 
         private void MainAppForm_Load(object sender, EventArgs e)
         {
-            //remoteDirTreeView.ContextMenuStrip = nodeContextMenuStrip;
+            mainTimer.Interval = 100;
+            mainTimer.Tick += new EventHandler(mainTimer_Tick);
+            mainTimer.Start();
             CreateLocalDirectoryView();
         }
 
@@ -368,6 +373,11 @@ namespace SharpFTPClient
                     ftpManager.NewFile(newFileNode.Tag.ToString(), newFileNode.Text);
                 }
             }
+        }
+
+        private void mainTimer_Tick(object sender, EventArgs e)
+        {
+            richTextBox1.Rtf = logger.GetLogAsRichText(true);
         }
     }
 }
